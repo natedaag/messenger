@@ -1,5 +1,7 @@
 package messenger;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 
@@ -9,6 +11,8 @@ public class ChatClient extends JFrame implements Runnable {
 	
 	Socket socket;
 	JTextArea ta;
+	JButton send, logout;
+	JTextField tf;
 	
 	Thread thread;
 	
@@ -22,6 +26,40 @@ public class ChatClient extends JFrame implements Runnable {
 		loginName = login;
 		
 		ta = new JTextArea(18, 50);
+		tf = new JTextField(50);
+		
+		send = new JButton("Send");
+		logout = new JButton("Logout");
+		
+		send.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			try {
+				dout.writeUTF(loginName + " " + "DATA " + tf.getText().toString());
+				tf.setText("");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}	
+			}
+			
+		});
+		
+		logout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			try {
+				dout.writeUTF(loginName + " " + "LOGOUT");
+				System.exit(1);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}	
+			}
+			
+		});
 		
 		din = new DataInputStream(socket.getInputStream());
 		dout = new DataOutputStream(socket.getOutputStream());
@@ -40,6 +78,9 @@ public class ChatClient extends JFrame implements Runnable {
 		JPanel panel = new JPanel();
 	
 		panel.add(new JScrollPane(ta));
+		panel.add(tf);
+		panel.add(send);
+		panel.add(logout);
 		
 		add(panel);
 		
